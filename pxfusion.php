@@ -1,6 +1,9 @@
 <?php
 
 require_once 'pxfusion.civix.php';
+require_once 'CRM/Core/Payment.php';
+
+error_log('extension loaded');
 
 /**
  * Implementation of hook_civicrm_config
@@ -68,3 +71,83 @@ function pxfusion_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function pxfusion_civicrm_managed(&$entities) {
   return _pxfusion_civix_civicrm_managed($entities);
 }
+
+class nz_co_giantrobot_PxFusion extends CRM_Core_Payment {
+  
+  /**
+   * We only need one instance of this object. So we use the singleton
+   * pattern and cache the instance in this variable
+   *
+   * @var object
+   * @static
+   */
+  static private $_singleton = null;
+
+  /**
+   * Mode of operation: live or test.
+   *
+   * @var object
+   * @static
+   */
+  static protected $_mode = NULL;
+  
+  /**
+   * Constructor.
+   *
+   * @param string $mode live or test.
+   * @param string $paymentProcessor 
+   * @return void
+   */
+  function __construct($mode, &$paymentProcessor) {
+    $this->_mode             = $mode;   // live or test
+    $this->_paymentProcessor = $paymentProcessor;
+    $this->_processorName    = 'PxFusion';
+  }
+  
+  /** 
+   * singleton function used to manage this object 
+   * 
+   * @param string $mode the mode of operation: live or test.
+   * @param object $paymentProcessor the payment processor.
+   *
+   * @return object 
+   * @static 
+   * 
+   */ 
+  static function &singleton($mode, &$paymentProcessor) {
+    $processorName = $paymentProcessor['name'];
+    if (self::$_singleton[$processorName] === null ) {
+      self::$_singleton[$processorName] = new nz_co_giantrobot_pxfusion($mode, $paymentProcessor);
+    }
+    return self::$_singleton[$processorName];
+  }
+
+  /**
+   * Validate configuration values.
+   *
+   * @return NULL | string errors
+   */
+  function checkConfig() {
+    error_log('extension chkconfig hook fired');
+    $config =& CRM_Core_Config::singleton();
+    $errors = array();
+
+    CRM_Core_Region::instance('billing-block')->update('default', array('disabled' => TRUE));
+    CRM_Core_Region::instance('page-body')->add(array(
+        'markup' => 'This is the page body.',
+      ));
+    
+    if (!empty($errors)) {
+      return implode('<p>', $errors);
+    }
+  }
+
+  /**
+   * Implement doDirectPayment method. Not sure about this.
+   */
+  function doDirectPayment(&$params) {
+    
+  }
+
+}
+
