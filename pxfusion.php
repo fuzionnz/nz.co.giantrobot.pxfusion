@@ -3,8 +3,6 @@
 require_once 'pxfusion.civix.php';
 require_once 'CRM/Core/Payment.php';
 
-error_log('extension loaded');
-
 /**
  * Implementation of hook_civicrm_config
  */
@@ -69,6 +67,27 @@ function pxfusion_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  * is installed, disabled, uninstalled.
  */
 function pxfusion_civicrm_managed(&$entities) {
+  $entities[] = array(
+    'module' => 'nz.co.giantrobot.pxfusion',
+    'name' => 'PxFusion',
+    'entity' => 'PaymentProcessorType',
+    'params' => array(
+      'version' => 3,
+      'name' => 'PxFusion',
+      'title' => 'DPS PxFusion',
+      'description' => 'DPS PxFusion Payment Processor',
+      'class_name' => 'Payment_PxFusion',
+      'billing_mode' => 'notify',
+      'user_name_label' => 'Username',
+      'password_label' => 'Password',
+      'url_site_default'=> 'https://sec.paymentexpress.com/pxmi3/pxfusionauth',
+      'url_recur_default' => 'https://sec.paymentexpress.com/pxmi3/pxfusionauth',
+      'url_site_test_default' => '',
+      'url_recur_test_default' => '',
+      'is_recur' => 1,
+      'payment_type' => 1,
+    ),
+  );
   return _pxfusion_civix_civicrm_managed($entities);
 }
 

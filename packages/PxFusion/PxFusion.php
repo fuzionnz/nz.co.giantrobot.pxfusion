@@ -10,16 +10,23 @@
  */
 class PxFusion {
   // DPS Px Fusion Details
-  protected $fusion_username = '';
-  protected $fusion_password = '';
+  public $fusion_username = '';
+  public $fusion_password = '';
   protected $wsdl = 'https://sec.paymentexpress.com/pxf/pxf.svc?wsdl';
 
   // Variables/Objects that are used to hold data for transactions
   public $tranDetail;
   protected $soap_client;
 
-  public function __construct() {
-    if ( ! is_object($this->tranDetail)) {
+  public function __construct($params) {
+    dpm($params, 'params');
+    if (isset($params['username'])) {
+      $this->fusion_username = $params['username'];
+    }
+    if (isset($params['password'])) {
+      $this->fusion_password = $params['password'];
+    }
+    if (!is_object($this->tranDetail)) {
       $this->tranDetail = new stdClass();
     }
   }
@@ -35,7 +42,7 @@ class PxFusion {
     $array_for_soap = array(
       'username' => $this->fusion_username,
       'password' => $this->fusion_password,
-      'tranDetail' => get_object_vars($this->tranDetail) # extracts all properties of object into associative array
+      'tranDetail' => get_object_vars($this->tranDetail) // extracts all properties of object into associative array
     );
 
     $response = $this->soap_client->GetTransactionId($array_for_soap);

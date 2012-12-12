@@ -18,10 +18,4 @@
   <civix>
     <namespace>CRM/Pxfusion</namespace>
   </civix>
-  <typeInfo>
-    <userNameLabel>Username</userNameLabel>
-    <passwordLabel>Password</passwordLabel>
-    <urlSiteDefault>https://sec.paymentexpress.com/pxmi3/pxfusionauth</urlSiteDefault>
-    <billingMode>form</billingMode>
-  </typeInfo>
 </extension>
